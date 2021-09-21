@@ -1,0 +1,87 @@
+<html lang="en">
+<%- include("./partials/head.ejs") %>
+
+<body>
+  <%- include("./partials/nav.ejs") %>
+
+  <div class="donors container content">
+    <h2>All Donors</h2>
+
+    <form class="search">
+      <input class="form-control mb-4" id="tableSearch" type="text" placeholder="Search..." />
+    </form>
+
+    <table id="tblList" class="table table-bordered table-striped table-hover">
+      <thead>  
+        <tr>  
+        <th>S.No</th>  
+        <th>Title</th>  
+        <th>Course Name</th> 
+        <th>donor</th>     
+        <% if (user.role === "admin") { %>
+          <th>Raised by</th>
+          <th colspan="2">Action</th>
+        <% } %>  
+       </tr>  
+     </thead>  
+     <tbody id='myTable'>
+    <% if (donors.length > 0) { %>
+      <% donors.forEach(function(donor,i) { %>
+        <% if (user.role == 'admin' || donor.raisedby === user.email ) { %>
+          <tr>
+          <td> <%= i+1 %></td>   
+         	<td><%= donor.title %></td>  
+          <td><%= donor.snippet %> </td>  
+          <td><%= donor.body %></td>    
+          <% if (user.role === "admin") { %>
+            <td>  <%= donor.raisedby %>  </td>
+            <td><a class="edit" data-doc="<%= donor._id %>"><img src="/edit.svg" alt="edit icon"></a></td>
+            <td><a class="delete" data-doc="<%= donor._id %>"><img src="/trashcan.svg" alt="delete icon"></a></td>
+          <% } %>        
+        </tr>
+       <% }%>
+      <% }) %>
+    <% } else { %>
+      <p>There are no Donors to display...</p>
+    <% } %>
+    </tbody>
+    </table>
+    
+  </div>
+
+  <%- include("./partials/footer.ejs") %>
+</body>
+</html>
+<script>
+  //Dynamic Search in table columns
+$(document).ready(function(){
+    $("#tableSearch").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTable tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+<script>
+
+  const trashcan = document.querySelector('a.delete');
+
+  trashcan.addEventListener('click', (e) => {
+    const endpoint = `/donors/${trashcan.dataset.doc}`;
+
+    fetch(endpoint, {
+      method: 'DELETE',
+    })
+    .then(response => response.json())
+    .then(data => window.location.href = data.redirect)
+    .catch(err => console.log(err));
+  });
+
+  const edit = document.querySelector('a.edit');
+
+  edit.addEventListener('click', (e) => {
+  window.location.href = `/donors/edit/${edit.dataset.doc}`;
+});
+  
+</script>

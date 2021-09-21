@@ -1,0 +1,18 @@
+<nav>
+  <div class="site-title">
+    <a href="/"><h2>Blood Bank Management System</h2></a>
+    <ul>
+      <li><a href="/donors">Donors</a></li>
+      <li><a href="/donors/create">New Donor</a></li>
+    </ul>
+  </div>
+  <ul>  
+    <% if (user) { %>
+      <li>Welcome, <%= user.uname %></li>
+      <li><a href="/logout">Log out</a></li>
+    <% } else { %>
+      <li><a href="/login" class="btn">Log in</a></li>
+      <li><a href="/signup" class="btn">Sign up</a></li>
+    <% } %>
+  </ul>
+</nav>
